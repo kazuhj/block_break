@@ -29,6 +29,8 @@ let leftPressed = false;
 
 // スコアを数える
 let score=0;
+// ライフを与える
+let lives = 3;
 
 // ブロックの変数
 let brickRowCount = 3;
@@ -43,7 +45,7 @@ let brickOffsetLeft = 30;
 let bricks = [];
 
 for(let c = 0; c < brickColumnCount; c++) {
-  bricks[c] = 0;
+  bricks[c] = [];
   for(let r = 0; r < brickRowCount; r++) {
     // status:衝突フラグ
     bricks[c][r] = {x: 0, y: 0, status: 1};
@@ -76,6 +78,12 @@ function drawScore() {
   ctx.font = "16px Arial";
   ctx.fillStyle = "#0095DD";
   ctx.fillText("Score:" + score, 8, 20);
+}
+
+function drawLives() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText("Lives:" + lives, canvas.width - 65, 20);
 }
 
 
@@ -126,6 +134,7 @@ function draw() {
   drawBricks();
   drawPaddle();
   drawScore();
+  drawLives();
   collisionDetection();
 
   // 上の壁を作る
@@ -143,11 +152,23 @@ function draw() {
       }
     }
     else {
-      alert("GAME OVER");
-      document.location.reload();
-      clearInterval(interval);
-    }
+      // ゲームオーバーになった時ライフを減らす
+      lives--;
 
+      if(!lives) {
+        alert("GAME OVER");
+        document.location.reload();
+      }
+      else {
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = 2;
+        dy = -2;
+        // dx = 5;
+        // dy = -5;
+        paddleX = (canvas.width - paddleWidth) / 2;
+      }
+    }
   }
 
   // x軸
@@ -168,11 +189,15 @@ function draw() {
   // しかし毎回描画しているので軌跡が残る
   x += dx;
   y += dy;
+
+  requestAnimationFrame(draw);
 }
 
 // パドルを操作
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+// パドルをマウスで操作
+document.addEventListener("mousemove", mouseMoveHandler, false);
 
 
 function keyDownHandler(e) {
@@ -199,8 +224,25 @@ function keyUpHandler(e) {
   }
 }
 
-// ゲームオーバー機能実装のため変数化
-let interval = setInterval(draw, 10)
+// ビューポートの水平方向のマウス位置(e.clientX)から
+// キャンバスの左端とビューポートの左端の距離(canvas.offsetleft)を引いて
+// relativeXの値をだす
+// これはキャンバスの左端とマウスカーソルの距離と同じになる
+function mouseMoveHandler(e) {
+  let relativeX = e.clientX - canvas.offsetLeft;
+  if(relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2;
+  }
+
+}
+
+// // ゲームオーバー機能実装のため変数化
+// let interval = setInterval(draw, 10)
+
+// 固定の１０ミリ秒のフレームレートではなくブラウザに制御を託す。
+// ブラウザはフレームレートを適切に同期し図形を必要な時だけ描画する
+// 古いsetInterval()メソッドよりも効率的で滑らかなアニメーションループになる
+draw();
 
 
 // --------------------------------
