@@ -27,6 +27,27 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
+// ブロックの変数
+let brickRowCount = 3;
+let brickColumnCount = 5;
+let brickWidth = 75;
+let brickHeight = 20;
+let brickPadding = 10;
+let brickOffsetTop = 30;
+let brickOffsetLeft = 30;
+
+// ブロックのための２次元配列を操作する入れ子のループを使った数行のコードを書き上げる
+let bricks = [];
+
+for(var c = 0; c < brickColumnCount; c++) {
+  bricks[c] = [];
+  for(var r = 0; r < brickRowCount; r++) {
+    bricks[c][r] = {x: 0, y: 0, status: 1};
+  }
+}
+
+
+
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x,y,ballRadius, 0, Math.PI * 2);
@@ -44,11 +65,31 @@ function drawPaddle() {
   ctx.closePath();
 }
 
+// ブロックを定義
+function drawBricks() {
+  for(var c = 0; c < brickColumnCount; c++) {
+    for(var r = 0; r < brickRowCount; r++) {
+
+        var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+        var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+        bricks[c][r].x = 0;
+        bricks[c][r].y = 0;
+
+      ctx.beginPath();
+      ctx.rect(brickX,brickY, brickWidth, brickHeight);
+      ctx.fillStyle = "#0095DD";
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+}
+
 
 function draw() {
   // Canvasの内容を消去するメソッド、clearRect()がある
   ctx.clearRect(0,0,canvas.width, canvas.height);
   drawBall()
+  drawBricks()
   drawPaddle()
 
   // 上の壁を作る
