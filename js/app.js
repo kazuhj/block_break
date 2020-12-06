@@ -17,9 +17,23 @@ let dy = -2;
 
 let ballRadius = 10;
 
+// パドルを定義
+let paddleHeight = 10;
+let paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x,y,ballRadius, 0, Math.PI * 2);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
+}
+
+// パドルを定義
+function drawPaddle() {
+  ctx.beginPath();
+  ctx.rect(paddleX,canvas.height - paddleHeight, paddleWidth, paddleHeight);
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
@@ -30,6 +44,7 @@ function draw() {
   // Canvasの内容を消去するメソッド、clearRect()がある
   ctx.clearRect(0,0,canvas.width, canvas.height);
   drawBall()
+  drawPaddle()
 
     // 上の壁を作る
     // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
