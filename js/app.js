@@ -17,9 +17,28 @@ let dy = -2;
 
 let ballRadius = 10;
 
+// パドルを定義
+let paddleHeight = 10;
+let paddleWidth = 75;
+let paddleX = (canvas.width - paddleWidth) / 2;
+
+// パドルを操作
+// 最初は制御ボタンは押されていないためどちらにおいてもデフォルトの値はfalse
+let rightPressed = false;
+let leftPressed = false;
+
 function drawBall() {
   ctx.beginPath();
   ctx.arc(x,y,ballRadius, 0, Math.PI * 2);
+  ctx.fillStyle = "#0095DD";
+  ctx.fill();
+  ctx.closePath();
+}
+
+// パドルを定義
+function drawPaddle() {
+  ctx.beginPath();
+  ctx.rect(paddleX,canvas.height - paddleHeight, paddleWidth, paddleHeight);
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
@@ -30,26 +49,61 @@ function draw() {
   // Canvasの内容を消去するメソッド、clearRect()がある
   ctx.clearRect(0,0,canvas.width, canvas.height);
   drawBall()
+  drawPaddle()
 
-    // 上の壁を作る
-    // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
-    // 壁と円の中心の衝突地点を計算してしまっているのでballRadiusで調整
-    if(y + dy > canvas.height - ballRadius | y + dy < ballRadius) {
-      dy = -dy;
-    }
-    // x軸
-    if(x + dx > canvas.width - ballRadius | x + dx < ballRadius) {
-      dx = -dx;
-    }
+  // 上の壁を作る
+  // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
+  // 壁と円の中心の衝突地点を計算してしまっているのでballRadiusで調整
+  if(y + dy > canvas.height - ballRadius | y + dy < ballRadius) {
+    dy = -dy;
+  }
+  // x軸
+  if(x + dx > canvas.width - ballRadius | x + dx < ballRadius) {
+    dx = -dx;
+  }
+
+  // 右矢印が押された場合
+  // &&の後：どちらのキーを長く押し続けたらパドルがCanvasの線から消えてしまうのを防ぐ
+  if(rightPressed && paddleX < canvas.width - paddleWidth) {
+    paddleX += 7;
+  } else if(leftPressed && paddleX > 0) {
+    paddleX -=7;
+  }
 
 
   // xとyに毎フレーム描画した後に小さな値を加え、ボールが動いているように見せる
   // しかし毎回描画しているので軌跡が残る
   x += dx;
   y += dy;
+}
+
+// パドルを操作
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
 
 
+function keyDownHandler(e) {
+  // 大抵のブラウザでは左右の矢印キーにそれぞれArrowLeftとArrowRightが対応。
+  // ただし、IE/Edgeに対応する為に、LeftとRightも確認する必要あり
+  if(e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = true;
+  }
+  else if(e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = true;
+  }
+}
 
+// -------------------
+
+function keyUpHandler(e) {
+  // 大抵のブラウザでは左右の矢印キーにそれぞれArrowLeftとArrowRightが対応。
+  // ただし、IE/Edgeに対応する為に、LeftとRightも確認する必要あり
+  if(e.key == "Right" || e.key == "ArrowRight") {
+    rightPressed = false;
+  }
+  else if(e.key == "Left" || e.key == "ArrowLeft") {
+    leftPressed = false;
+  }
 }
 
 setInterval(draw, 10)
