@@ -33,11 +33,12 @@ function draw() {
 
     // 上の壁を作る
     // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
-    if(y + dy > canvas.height | y + dy < 0) {
+    // 壁と円の中心の衝突地点を計算してしまっているのでballRadiusで調整
+    if(y + dy > canvas.height - ballRadius | y + dy < ballRadius) {
       dy = -dy;
     }
     // x軸
-    if(x + dx > canvas.width | x + dx < 0) {
+    if(x + dx > canvas.width - ballRadius | x + dx < ballRadius) {
       dx = -dx;
     }
 
