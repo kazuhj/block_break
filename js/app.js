@@ -39,13 +39,31 @@ let brickOffsetLeft = 30;
 // ブロックのための２次元配列を操作する入れ子のループを使った数行のコードを書き上げる
 let bricks = [];
 
-for(var c = 0; c < brickColumnCount; c++) {
-  bricks[c] = [];
-  for(var r = 0; r < brickRowCount; r++) {
+for(let c = 0; c < brickColumnCount; c++) {
+  bricks[c] = 0;
+  for(let r = 0; r < brickRowCount; r++) {
+    // status:衝突フラグ
     bricks[c][r] = {x: 0, y: 0, status: 1};
   }
 }
 
+// 衝突検出関数
+function collisionDetection() {
+  for(var c = 0; c < brickColumnCount; c++) {
+    for(var r = 0; r < brickRowCount; r++) {
+      var b = bricks[c][r];
+
+      if(b.status == 1) {
+        if(x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+          dy = -dy;
+          b.status = 0;
+          score++;
+    
+        }
+      }
+    }
+  }
+}
 
 
 function drawBall() {
@@ -70,27 +88,31 @@ function drawBricks() {
   for(var c = 0; c < brickColumnCount; c++) {
     for(var r = 0; r < brickRowCount; r++) {
 
+      if(bricks[c][r].status == 1) {
         var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
         var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        bricks[c][r].x = 0;
-        bricks[c][r].y = 0;
+        bricks[c][r].x = brickX;
+        bricks[c][r].y = brickY;
 
-      ctx.beginPath();
-      ctx.rect(brickX,brickY, brickWidth, brickHeight);
-      ctx.fillStyle = "#0095DD";
-      ctx.fill();
-      ctx.closePath();
+        ctx.beginPath();
+        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+      }
     }
   }
+
 }
 
 
 function draw() {
   // Canvasの内容を消去するメソッド、clearRect()がある
   ctx.clearRect(0,0,canvas.width, canvas.height);
-  drawBall()
-  drawBricks()
-  drawPaddle()
+  drawBall();
+  drawBricks();
+  drawPaddle();
+  collisionDetection();
 
   // 上の壁を作る
   // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
@@ -99,9 +121,19 @@ function draw() {
   if(y + dy < ballRadius) {
     dy = -dy;
   } else if(y + dy > canvas.height - ballRadius) {
-    alert("GAME OVER");
-    document.location.reload();
-    clearInterval(interval);
+
+    // ボールの位置がパドル内だったら
+    if(x > paddleX && x < paddleX + paddleWidth) {
+      if(y = y - paddleHeight) {
+        dy = -dy;
+      }
+    }
+    else {
+      alert("GAME OVER");
+      document.location.reload();
+      clearInterval(interval);
+    }
+
   }
 
   // x軸
@@ -178,4 +210,3 @@ ctx.rect(160,10,100,40);
 ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
 ctx.stroke();
 ctx.closePath();
-
