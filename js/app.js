@@ -15,9 +15,11 @@ let y = canvas.height - 30;
 let dx = 2;
 let dy = -2;
 
+let ballRadius = 10;
+
 function drawBall() {
   ctx.beginPath();
-  ctx.arc(x,y,10, 0, Math.PI * 2);
+  ctx.arc(x,y,ballRadius, 0, Math.PI * 2);
   ctx.fillStyle = "#0095DD";
   ctx.fill();
   ctx.closePath();
@@ -29,10 +31,24 @@ function draw() {
   ctx.clearRect(0,0,canvas.width, canvas.height);
   drawBall()
 
+    // 上の壁を作る
+    // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
+    if(y + dy > canvas.height | y + dy < 0) {
+      dy = -dy;
+    }
+    // x軸
+    if(x + dx > canvas.width | x + dx < 0) {
+      dx = -dx;
+    }
+
+
   // xとyに毎フレーム描画した後に小さな値を加え、ボールが動いているように見せる
   // しかし毎回描画しているので軌跡が残る
   x += dx;
   y += dy;
+
+
+
 }
 
 setInterval(draw, 10)
