@@ -27,6 +27,9 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
+// スコアを数える
+let score=0;
+
 // ブロックの変数
 let brickRowCount = 3;
 let brickColumnCount = 5;
@@ -59,10 +62,20 @@ function collisionDetection() {
           b.status = 0;
           score++;
     
+          if(score == brickRowCount * brickColumnCount) {
+            alert("YOU WIN, CONGRATULATIONS!");
+            document.location.reload();
+          }
         }
       }
     }
   }
+}
+
+function drawScore() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText("Score:" + score, 8, 20);
 }
 
 
@@ -112,6 +125,7 @@ function draw() {
   drawBall();
   drawBricks();
   drawPaddle();
+  drawScore();
   collisionDetection();
 
   // 上の壁を作る
