@@ -54,9 +54,15 @@ function draw() {
   // 上の壁を作る
   // もしボールの位置のyのが０未満だったら、またキャンバス高さを超えた場合、符号反転させた値を設定することでy軸方向の動きの向きを変える
   // 壁と円の中心の衝突地点を計算してしまっているのでballRadiusで調整
-  if(y + dy > canvas.height - ballRadius | y + dy < ballRadius) {
+  // ゲームオーバー機能で条件分岐を編集
+  if(y + dy < ballRadius) {
     dy = -dy;
+  } else if(y + dy > canvas.height - ballRadius) {
+    alert("GAME OVER");
+    document.location.reload();
+    clearInterval(interval);
   }
+
   // x軸
   if(x + dx > canvas.width - ballRadius | x + dx < ballRadius) {
     dx = -dx;
@@ -106,7 +112,8 @@ function keyUpHandler(e) {
   }
 }
 
-setInterval(draw, 10)
+// ゲームオーバー機能実装のため変数化
+let interval = setInterval(draw, 10)
 
 
 // --------------------------------
